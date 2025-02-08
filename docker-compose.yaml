@@ -1,0 +1,38 @@
+version: '1.0'
+services:
+  postgres:
+    image: postgres:17-alpine3.21
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=brewgo
+    ports:
+      - "5432:5432"
+    networks:
+      - brewgo-network
+
+  redis:
+    image: redis:7.4.2-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - brewgo-network
+  
+  counter-service:
+    build: 
+      context: .
+      dockerfile: ./services/counter/Dockerfile
+    image: counter-service
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_SOURCE=postgresql://root:secret@postgres:5432/brewgo?sslmode=disable
+    depends_on:
+      - postgres
+    networks:
+      - brewgo-network
+    command: 
+
+networks:
+  brewgo-network:
+    driver: bridge
