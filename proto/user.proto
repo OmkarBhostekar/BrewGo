@@ -18,6 +18,27 @@ service UserService {
             description: "Use this API to create a new user."
         };
     }
+    rpc GetUserByPhoneNumber (GetUserByPhoneNumberRequest) returns (GetUserByPhoneNumberResponse) {
+        option (google.api.http) = {
+            get: "/v1/users/{phone_number}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: ["User"]
+            summary: "Get user by phone number"
+            description: "Use this API to get user by phone number."
+        };
+    }
+    rpc LoginUser (LoginUserRequest) returns (LoginUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/users/login"
+            body: "*"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: ["User"]
+            summary: "Login user"
+            description: "Use this API to login user."
+        };
+    }
 }
 
 message CreateUserRequest {
@@ -29,6 +50,27 @@ message CreateUserRequest {
 
 message CreateUserResponse {
     User user = 1;
+}
+
+message GetUserByPhoneNumberRequest {
+    string phone_number = 1;
+}
+
+message GetUserByPhoneNumberResponse {
+    User user = 1;
+}
+
+message LoginUserRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message LoginUserResponse {
+    User user = 1;
+    string access_token = 2;
+    string refresh_token = 3;
+    google.protobuf.Timestamp access_token_expires_at = 4;
+    google.protobuf.Timestamp refresh_token_expires_at = 5;
 }
 
 message User {
