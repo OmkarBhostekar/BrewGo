@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package brew.go.proto;
+package brew.go.proto.user;
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
-option go_package = "github.com/omkarbhostekar/proto/gen";
+option go_package = "github.com/omkarbhostekar/brewgo/proto/gen";
 
 service UserService {
     rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {

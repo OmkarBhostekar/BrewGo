@@ -11,7 +11,6 @@ require (
 )
 
 require (
-	github.com/golang/mock v1.6.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
