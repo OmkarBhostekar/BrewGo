@@ -21,14 +21,14 @@ INSERT INTO users(
     $2,
     $3,
     $4
-) RETURNING id, name, email, password, phone_number, is_verified, role, created_at, updated_at
+) RETURNING id, name, email, password, phone_number, is_verified, role, created_at, password_changed_at
 `
 
 type CreateUserParams struct {
-	Name        sql.NullString `json:"name"`
-	Email       sql.NullString `json:"email"`
-	Password    sql.NullString `json:"password"`
-	PhoneNumber sql.NullString `json:"phone_number"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	PhoneNumber string `json:"phone_number"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -48,16 +48,16 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.IsVerified,
 		&i.Role,
 		&i.CreatedAt,
-		&i.UpdatedAt,
+		&i.PasswordChangedAt,
 	)
 	return i, err
 }
 
 const getUserByPhoneNumber = `-- name: GetUserByPhoneNumber :one
-SELECT id, name, email, password, phone_number, is_verified, role, created_at, updated_at FROM users WHERE phone_number = $1 LIMIT 1
+SELECT id, name, email, password, phone_number, is_verified, role, created_at, password_changed_at FROM users WHERE phone_number = $1 LIMIT 1
 `
 
-func (q *Queries) GetUserByPhoneNumber(ctx context.Context, phoneNumber sql.NullString) (User, error) {
+func (q *Queries) GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserByPhoneNumber, phoneNumber)
 	var i User
 	err := row.Scan(
@@ -69,7 +69,7 @@ func (q *Queries) GetUserByPhoneNumber(ctx context.Context, phoneNumber sql.Null
 		&i.IsVerified,
 		&i.Role,
 		&i.CreatedAt,
-		&i.UpdatedAt,
+		&i.PasswordChangedAt,
 	)
 	return i, err
 }
@@ -82,7 +82,7 @@ SET
     email = COALESCE($4, email),
     phone_number = COALESCE($5, phone_number)
 WHERE id = $1
-RETURNING id, name, email, password, phone_number, is_verified, role, created_at, updated_at
+RETURNING id, name, email, password, phone_number, is_verified, role, created_at, password_changed_at
 `
 
 type UpdateUserParams struct {
@@ -111,7 +111,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.IsVerified,
 		&i.Role,
 		&i.CreatedAt,
-		&i.UpdatedAt,
+		&i.PasswordChangedAt,
 	)
 	return i, err
 }

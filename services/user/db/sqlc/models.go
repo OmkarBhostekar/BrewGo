@@ -6,16 +6,17 @@ package user
 
 import (
 	"database/sql"
+	"time"
 )
 
 type User struct {
-	ID          int32          `json:"id"`
-	Name        sql.NullString `json:"name"`
-	Email       sql.NullString `json:"email"`
-	Password    sql.NullString `json:"password"`
-	PhoneNumber sql.NullString `json:"phone_number"`
-	IsVerified  sql.NullBool   `json:"is_verified"`
-	Role        sql.NullString `json:"role"`
-	CreatedAt   sql.NullTime   `json:"created_at"`
-	UpdatedAt   sql.NullTime   `json:"updated_at"`
+	ID                int32          `json:"id"`
+	Name              string         `json:"name"`
+	Email             string         `json:"email"`
+	Password          string         `json:"password"`
+	PhoneNumber       string         `json:"phone_number"`
+	IsVerified        sql.NullBool   `json:"is_verified"`
+	Role              sql.NullString `json:"role"`
+	CreatedAt         time.Time      `json:"created_at"`
+	PasswordChangedAt time.Time      `json:"password_changed_at"`
 }

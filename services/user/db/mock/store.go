@@ -6,7 +6,6 @@ package mock_sqlc
 
 import (
 	context "context"
-	sql "database/sql"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -52,7 +51,7 @@ func (mr *MockStoreMockRecorder) CreateUser(arg0, arg1 interface{}) *gomock.Call
 }
 
 // GetUserByPhoneNumber mocks base method.
-func (m *MockStore) GetUserByPhoneNumber(arg0 context.Context, arg1 sql.NullString) (user.User, error) {
+func (m *MockStore) GetUserByPhoneNumber(arg0 context.Context, arg1 string) (user.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserByPhoneNumber", arg0, arg1)
 	ret0, _ := ret[0].(user.User)

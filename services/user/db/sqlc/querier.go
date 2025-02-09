@@ -6,12 +6,11 @@ package user
 
 import (
 	"context"
-	"database/sql"
 )
 
 type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
-	GetUserByPhoneNumber(ctx context.Context, phoneNumber sql.NullString) (User, error)
+	GetUserByPhoneNumber(ctx context.Context, phoneNumber string) (User, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
