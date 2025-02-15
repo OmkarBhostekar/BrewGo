@@ -8,6 +8,9 @@ migratedown:
 mock-user-service:
 	mockgen -destination ./services/user/db/mock/store.go github.com/omkarbhostekar/brewgo/services/user/db/sqlc Store
 
+sqlc:
+	sqlc generate
+
 proto:
 	rm -f proto/gen/*.go
 	rm -f doc/swagger/*.swagger.json
