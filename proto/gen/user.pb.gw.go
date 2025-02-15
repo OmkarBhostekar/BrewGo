@@ -151,7 +151,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/brew.go.proto.user.UserService/GetUserByPhoneNumber", runtime.WithHTTPPathPattern("/v1/users/{phone_number}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/brew.go.proto.user.UserService/GetUserByPhoneNumber", runtime.WithHTTPPathPattern("/v1/users/search/{phone_number}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -246,7 +246,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/brew.go.proto.user.UserService/GetUserByPhoneNumber", runtime.WithHTTPPathPattern("/v1/users/{phone_number}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/brew.go.proto.user.UserService/GetUserByPhoneNumber", runtime.WithHTTPPathPattern("/v1/users/search/{phone_number}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -281,7 +281,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 
 var (
 	pattern_UserService_CreateUser_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "users", "create"}, ""))
-	pattern_UserService_GetUserByPhoneNumber_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "users", "phone_number"}, ""))
+	pattern_UserService_GetUserByPhoneNumber_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"v1", "users", "search", "phone_number"}, ""))
 	pattern_UserService_LoginUser_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"v1", "users", "login"}, ""))
 )
 

@@ -84,7 +84,7 @@
         ]
       }
     },
-    "/v1/users/{phoneNumber}": {
+    "/v1/users/search/{phoneNumber}": {
       "get": {
         "summary": "Get user by phone number",
         "description": "Use this API to get user by phone number.",

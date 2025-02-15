@@ -21,11 +21,11 @@ func (server *UserServer) LoginUser(ctx context.Context, req *gen.LoginUserReque
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "invalid password %s", err)
 	}
-	access, accessPayload, err := server.tokenMaker.CreateToken(user.ID, server.config.AccessTokenDuration)
+	access, accessPayload, err := server.tokenMaker.CreateToken(user.ID, user.Role.String, server.config.AccessTokenDuration)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "internal server error: %s", err)
 	}
-	refresh, refreshPayload, err := server.tokenMaker.CreateToken(user.ID, server.config.RefreshTokenDuration)
+	refresh, refreshPayload, err := server.tokenMaker.CreateToken(user.ID, user.Role.String, server.config.RefreshTokenDuration)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "internal server error: %s", err)
 	}

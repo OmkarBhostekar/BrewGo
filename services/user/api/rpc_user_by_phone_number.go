@@ -10,6 +10,14 @@ import (
 )
 
 func (server *UserServer) GetUserByPhoneNumber(ctx context.Context, req *gen.GetUserByPhoneNumberRequest) (res *gen.GetUserByPhoneNumberResponse, err error) {
+	authPayload, err := server.authorizeUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "unauthenticated %s", err)
+	}
+	if authPayload.Role != "admin" {
+		return nil, status.Errorf(codes.PermissionDenied, "you're not authorized to complete this action")
+	}
+	
 	user, err := server.store.GetUserByPhoneNumber(ctx, req.GetPhoneNumber())
 
 	if err != nil {
