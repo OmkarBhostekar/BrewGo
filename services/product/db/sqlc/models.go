@@ -6,16 +6,18 @@ package product
 
 import (
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 type Product struct {
-	ID          int32     `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Price       string    `json:"price"`
-	Category    string    `json:"category"`
-	IsAvailable bool      `json:"is_available"`
-	ItemType    string    `json:"item_type"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          int32           `json:"id"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	Price       decimal.Decimal `json:"price"`
+	Category    string          `json:"category"`
+	IsAvailable bool            `json:"is_available"`
+	ItemType    string          `json:"item_type"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
 }

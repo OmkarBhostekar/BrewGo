@@ -8,6 +8,8 @@ package product
 import (
 	"context"
 	"database/sql"
+
+	"github.com/shopspring/decimal"
 )
 
 const addProduct = `-- name: AddProduct :one
@@ -29,12 +31,12 @@ INSERT INTO products(
 `
 
 type AddProductParams struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Price       string `json:"price"`
-	Category    string `json:"category"`
-	IsAvailable bool   `json:"is_available"`
-	ItemType    string `json:"item_type"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	Price       decimal.Decimal `json:"price"`
+	Category    string          `json:"category"`
+	IsAvailable bool            `json:"is_available"`
+	ItemType    string          `json:"item_type"`
 }
 
 func (q *Queries) AddProduct(ctx context.Context, arg AddProductParams) (Product, error) {
@@ -203,13 +205,13 @@ RETURNING id, name, description, price, category, is_available, item_type, creat
 `
 
 type UpdateProductParams struct {
-	ID          int32          `json:"id"`
-	Name        sql.NullString `json:"name"`
-	Description sql.NullString `json:"description"`
-	Price       sql.NullString `json:"price"`
-	Category    sql.NullString `json:"category"`
-	IsAvailable sql.NullBool   `json:"is_available"`
-	ItemType    sql.NullString `json:"item_type"`
+	ID          int32           `json:"id"`
+	Name        sql.NullString  `json:"name"`
+	Description sql.NullString  `json:"description"`
+	Price       decimal.Decimal `json:"price"`
+	Category    sql.NullString  `json:"category"`
+	IsAvailable sql.NullBool    `json:"is_available"`
+	ItemType    sql.NullString  `json:"item_type"`
 }
 
 func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error) {
