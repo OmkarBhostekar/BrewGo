@@ -42,3 +42,16 @@ func (server *UserServer) authorizeUser(Ctx context.Context) (*token.Payload, er
 
 	return payload, nil
 }
+
+func (server *UserServer) getRoleFromHeader(Ctx context.Context) (string, error) {
+	mtdt, ok := metadata.FromIncomingContext(Ctx)
+	if !ok {
+		return "", fmt.Errorf("metadata is not provided")
+	}
+	values := mtdt.Get("X-Role")
+	if len(values) == 0 {
+		return "", fmt.Errorf("role is not provided")
+	}
+
+	return values[0], nil
+}

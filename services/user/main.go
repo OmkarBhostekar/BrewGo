@@ -16,6 +16,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -38,8 +39,23 @@ func main() {
 
 	log.Info().Msg("connected to db")
 
-	go runGatewayServer(config, store)
+	// go runGatewayServer(config, store)
 	runGrpcServer(config, store)
+}
+
+func metadataInterceptor(
+	ctx context.Context,
+	req interface{},
+	info *grpc.UnaryServerInfo,
+	handler grpc.UnaryHandler,
+) (interface{}, error) {
+	userID := metadata.ValueFromIncomingContext(ctx, "X-User-Id")
+	role := metadata.ValueFromIncomingContext(ctx, "X-Role")
+
+	log.Info().Msgf("gRPC Server - Received Metadata: X-User-Id=%s, X-Role=%s", userID, role)
+
+	// Proceed with the request
+	return handler(ctx, req)
 }
 
 func runGrpcServer(config util.Config, store db.Store) {
@@ -47,7 +63,7 @@ func runGrpcServer(config util.Config, store db.Store) {
 	if err != nil {
 		log.Fatal().Msg("cannot create server")
 	}
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(metadataInterceptor))
 	gen.RegisterUserServiceServer(grpcServer, server)
 	reflection.Register(grpcServer)
 

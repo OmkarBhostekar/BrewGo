@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "product.proto",
+    "title": "counter.proto",
     "version": "version not set"
   },
   "tags": [
     {
-      "name": "ProductService"
+      "name": "CounterService"
     },
     {
       "name": "UserService"
@@ -23,12 +23,12 @@
       "post": {
         "summary": "Create a add product.",
         "description": "Use this API to add a product.",
-        "operationId": "ProductService_AddProduct",
+        "operationId": "CounterService_AddProduct",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/productProduct"
+              "$ref": "#/definitions/counterProduct"
             }
           },
           "default": {
@@ -44,7 +44,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/productAddProductRequest"
+              "$ref": "#/definitions/counterAddProductRequest"
             }
           }
         ],
@@ -57,12 +57,12 @@
       "get": {
         "summary": "List products by category.",
         "description": "Use this API to list products by category.",
-        "operationId": "ProductService_ListProductsByCategory",
+        "operationId": "CounterService_ListProductsByCategory",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/productSearchProductsByNameResponse"
+              "$ref": "#/definitions/counterSearchProductsByNameResponse"
             }
           },
           "default": {
@@ -103,12 +103,12 @@
       "get": {
         "summary": "Search products by name.",
         "description": "Use this API to search products by name.",
-        "operationId": "ProductService_SearchProductsByName",
+        "operationId": "CounterService_SearchProductsByName",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/productSearchProductsByNameResponse"
+              "$ref": "#/definitions/counterSearchProductsByNameResponse"
             }
           },
           "default": {
@@ -149,12 +149,12 @@
       "get": {
         "summary": "Get a product.",
         "description": "Use this API to get a product.",
-        "operationId": "ProductService_GetProduct",
+        "operationId": "CounterService_GetProduct",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/productProduct"
+              "$ref": "#/definitions/counterProduct"
             }
           },
           "default": {
@@ -179,7 +179,7 @@
       "delete": {
         "summary": "Delete a product.",
         "description": "Use this API to delete a product.",
-        "operationId": "ProductService_DeleteProduct",
+        "operationId": "CounterService_DeleteProduct",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -210,12 +210,12 @@
       "patch": {
         "summary": "Update a product.",
         "description": "Use this API to update a product.",
-        "operationId": "ProductService_UpdateProduct",
+        "operationId": "CounterService_UpdateProduct",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/productProduct"
+              "$ref": "#/definitions/counterProduct"
             }
           },
           "default": {
@@ -237,7 +237,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ProductServiceUpdateProductBody"
+              "$ref": "#/definitions/CounterServiceUpdateProductBody"
             }
           }
         ],
@@ -348,7 +348,7 @@
     }
   },
   "definitions": {
-    "ProductServiceUpdateProductBody": {
+    "CounterServiceUpdateProductBody": {
       "type": "object",
       "properties": {
         "name": {
@@ -372,7 +372,7 @@
         }
       }
     },
-    "productAddProductRequest": {
+    "counterAddProductRequest": {
       "type": "object",
       "properties": {
         "name": {
@@ -393,7 +393,7 @@
         }
       }
     },
-    "productProduct": {
+    "counterProduct": {
       "type": "object",
       "properties": {
         "name": {
@@ -417,14 +417,14 @@
         }
       }
     },
-    "productSearchProductsByNameResponse": {
+    "counterSearchProductsByNameResponse": {
       "type": "object",
       "properties": {
         "products": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/productProduct"
+            "$ref": "#/definitions/counterProduct"
           }
         }
       }
@@ -542,6 +542,18 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "userValidateTokenResponse": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "role": {
+          "type": "string"
         }
       }
     }

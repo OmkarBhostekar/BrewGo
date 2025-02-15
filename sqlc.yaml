@@ -13,12 +13,12 @@ sql:
         emit_exact_table_names: false
         emit_empty_slices: true
   - schema: "db/migration/000002_add_products.up.sql"
-    queries: "services/product/db/query/products.sql"
+    queries: "services/counter/db/query/products.sql"
     engine: "postgresql"
     gen:
       go:
-        package: "product"
-        out: "services/product/db/sqlc"
+        package: "counter"
+        out: "services/counter/db/sqlc"
         emit_interface: true
         emit_json_tags: true
         emit_prepared_queries: false

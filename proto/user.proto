@@ -39,6 +39,9 @@ service UserService {
             description: "Use this API to login user."
         };
     }
+
+    // internal rpc for validating token
+    rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse) {}
 }
 
 message CreateUserRequest {
@@ -79,4 +82,13 @@ message User {
     string email = 3;
     google.protobuf.Timestamp password_changed_at = 4;
     google.protobuf.Timestamp created_at = 5;
+}
+
+message ValidateTokenRequest {
+    string access_token = 1;
+}
+
+message ValidateTokenResponse {
+    int32 user_id = 1;
+    string role = 2;
 }
