@@ -5,7 +5,6 @@ import (
 	"database/sql"
 
 	gen "github.com/omkarbhostekar/brewgo/proto/gen"
-	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -15,7 +14,6 @@ func (server *UserServer) GetUserByPhoneNumber(ctx context.Context, req *gen.Get
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "unauthenticated %s", err)
 	}
-	log.Info().Msgf("role: %s", role)
 	if role != "admin" {
 		return nil, status.Errorf(codes.PermissionDenied, "you're not authorized to complete this action")
 	}

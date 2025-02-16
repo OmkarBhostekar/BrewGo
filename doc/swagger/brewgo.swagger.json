@@ -19,7 +19,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/product": {
+    "/v1/counter/product": {
       "post": {
         "summary": "Create a add product.",
         "description": "Use this API to add a product.",
@@ -53,11 +53,11 @@
         ]
       }
     },
-    "/v1/product/category": {
+    "/v1/counter/product/category": {
       "get": {
         "summary": "List products by category.",
         "description": "Use this API to list products by category.",
-        "operationId": "CounterService_ListProductsByCategory",
+        "operationId": "CounterService_SearchProductsByCategory",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -99,7 +99,7 @@
         ]
       }
     },
-    "/v1/product/search": {
+    "/v1/counter/product/search": {
       "get": {
         "summary": "Search products by name.",
         "description": "Use this API to search products by name.",
@@ -145,7 +145,7 @@
         ]
       }
     },
-    "/v1/product/{productId}": {
+    "/v1/counter/product/{productId}": {
       "get": {
         "summary": "Get a product.",
         "description": "Use this API to get a product.",
@@ -396,6 +396,10 @@
     "counterProduct": {
       "type": "object",
       "properties": {
+        "productId": {
+          "type": "integer",
+          "format": "int32"
+        },
         "name": {
           "type": "string"
         },

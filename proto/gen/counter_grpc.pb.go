@@ -20,12 +20,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CounterService_AddProduct_FullMethodName             = "/brew.go.proto.counter.CounterService/AddProduct"
-	CounterService_UpdateProduct_FullMethodName          = "/brew.go.proto.counter.CounterService/UpdateProduct"
-	CounterService_DeleteProduct_FullMethodName          = "/brew.go.proto.counter.CounterService/DeleteProduct"
-	CounterService_GetProduct_FullMethodName             = "/brew.go.proto.counter.CounterService/GetProduct"
-	CounterService_SearchProductsByName_FullMethodName   = "/brew.go.proto.counter.CounterService/SearchProductsByName"
-	CounterService_ListProductsByCategory_FullMethodName = "/brew.go.proto.counter.CounterService/ListProductsByCategory"
+	CounterService_AddProduct_FullMethodName               = "/brew.go.proto.counter.CounterService/AddProduct"
+	CounterService_UpdateProduct_FullMethodName            = "/brew.go.proto.counter.CounterService/UpdateProduct"
+	CounterService_DeleteProduct_FullMethodName            = "/brew.go.proto.counter.CounterService/DeleteProduct"
+	CounterService_GetProduct_FullMethodName               = "/brew.go.proto.counter.CounterService/GetProduct"
+	CounterService_SearchProductsByName_FullMethodName     = "/brew.go.proto.counter.CounterService/SearchProductsByName"
+	CounterService_SearchProductsByCategory_FullMethodName = "/brew.go.proto.counter.CounterService/SearchProductsByCategory"
 )
 
 // CounterServiceClient is the client API for CounterService service.
@@ -37,7 +37,7 @@ type CounterServiceClient interface {
 	DeleteProduct(ctx context.Context, in *DeleteProductRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*Product, error)
 	SearchProductsByName(ctx context.Context, in *SearchProductsByNameRequest, opts ...grpc.CallOption) (*SearchProductsByNameResponse, error)
-	ListProductsByCategory(ctx context.Context, in *ListProductsByCategoryRequest, opts ...grpc.CallOption) (*SearchProductsByNameResponse, error)
+	SearchProductsByCategory(ctx context.Context, in *SearchProductsByCategoryRequest, opts ...grpc.CallOption) (*SearchProductsByNameResponse, error)
 }
 
 type counterServiceClient struct {
@@ -98,10 +98,10 @@ func (c *counterServiceClient) SearchProductsByName(ctx context.Context, in *Sea
 	return out, nil
 }
 
-func (c *counterServiceClient) ListProductsByCategory(ctx context.Context, in *ListProductsByCategoryRequest, opts ...grpc.CallOption) (*SearchProductsByNameResponse, error) {
+func (c *counterServiceClient) SearchProductsByCategory(ctx context.Context, in *SearchProductsByCategoryRequest, opts ...grpc.CallOption) (*SearchProductsByNameResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SearchProductsByNameResponse)
-	err := c.cc.Invoke(ctx, CounterService_ListProductsByCategory_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, CounterService_SearchProductsByCategory_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +117,7 @@ type CounterServiceServer interface {
 	DeleteProduct(context.Context, *DeleteProductRequest) (*emptypb.Empty, error)
 	GetProduct(context.Context, *GetProductRequest) (*Product, error)
 	SearchProductsByName(context.Context, *SearchProductsByNameRequest) (*SearchProductsByNameResponse, error)
-	ListProductsByCategory(context.Context, *ListProductsByCategoryRequest) (*SearchProductsByNameResponse, error)
+	SearchProductsByCategory(context.Context, *SearchProductsByCategoryRequest) (*SearchProductsByNameResponse, error)
 	mustEmbedUnimplementedCounterServiceServer()
 }
 
@@ -143,8 +143,8 @@ func (UnimplementedCounterServiceServer) GetProduct(context.Context, *GetProduct
 func (UnimplementedCounterServiceServer) SearchProductsByName(context.Context, *SearchProductsByNameRequest) (*SearchProductsByNameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SearchProductsByName not implemented")
 }
-func (UnimplementedCounterServiceServer) ListProductsByCategory(context.Context, *ListProductsByCategoryRequest) (*SearchProductsByNameResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListProductsByCategory not implemented")
+func (UnimplementedCounterServiceServer) SearchProductsByCategory(context.Context, *SearchProductsByCategoryRequest) (*SearchProductsByNameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchProductsByCategory not implemented")
 }
 func (UnimplementedCounterServiceServer) mustEmbedUnimplementedCounterServiceServer() {}
 func (UnimplementedCounterServiceServer) testEmbeddedByValue()                        {}
@@ -257,20 +257,20 @@ func _CounterService_SearchProductsByName_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CounterService_ListProductsByCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListProductsByCategoryRequest)
+func _CounterService_SearchProductsByCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchProductsByCategoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CounterServiceServer).ListProductsByCategory(ctx, in)
+		return srv.(CounterServiceServer).SearchProductsByCategory(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CounterService_ListProductsByCategory_FullMethodName,
+		FullMethod: CounterService_SearchProductsByCategory_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CounterServiceServer).ListProductsByCategory(ctx, req.(*ListProductsByCategoryRequest))
+		return srv.(CounterServiceServer).SearchProductsByCategory(ctx, req.(*SearchProductsByCategoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -303,8 +303,8 @@ var CounterService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CounterService_SearchProductsByName_Handler,
 		},
 		{
-			MethodName: "ListProductsByCategory",
-			Handler:    _CounterService_ListProductsByCategory_Handler,
+			MethodName: "SearchProductsByCategory",
+			Handler:    _CounterService_SearchProductsByCategory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

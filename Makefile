@@ -21,7 +21,13 @@ proto:
     proto/*.proto
 	statik -src=./doc/swagger -dest=./doc
 
+run-api-gateway:
+	cd services/api-gateway && go run main.go
+
 run-user-service:
 	cd services/user && go run main.go
+
+run-counter-service:
+	cd services/counter && go run main.go
 
 .PHONY: new_migration migrateup migratedown proto mock-user-service run-user-service

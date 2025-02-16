@@ -43,7 +43,7 @@ func runGrpcServer(config util.Config, store db.Store) {
 		log.Fatal().Msg("cannot create server")
 	}
 	grpcServer := grpc.NewServer()
-	gen.RegisterUserServiceServer(grpcServer, server)
+	gen.RegisterCounterServiceServer(grpcServer, server)
 	reflection.Register(grpcServer)
 
 	listener, err := net.Listen("tcp", "0.0.0.0:3002")

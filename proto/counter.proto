@@ -9,7 +9,7 @@ option go_package = "github.com/omkarbhostekar/brewgo/proto/gen";
 service CounterService {
     rpc AddProduct (AddProductRequest) returns (Product) {
         option (google.api.http) = {
-            post: "/v1/product"
+            post: "/v1/counter/product"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -21,7 +21,7 @@ service CounterService {
 
     rpc UpdateProduct (UpdateProductRequest) returns (Product) {
         option (google.api.http) = {
-            patch: "/v1/product/{product_id}"
+            patch: "/v1/counter/product/{product_id}"
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -33,7 +33,7 @@ service CounterService {
 
     rpc DeleteProduct (DeleteProductRequest) returns (google.protobuf.Empty) {
         option (google.api.http) = {
-            delete: "/v1/product/{product_id}"
+            delete: "/v1/counter/product/{product_id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags: ["Product"]
@@ -44,7 +44,7 @@ service CounterService {
 
     rpc GetProduct (GetProductRequest) returns (Product) {
         option (google.api.http) = {
-            get: "/v1/product/{product_id}"
+            get: "/v1/counter/product/{product_id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags: ["Product"]
@@ -55,7 +55,7 @@ service CounterService {
 
     rpc SearchProductsByName (SearchProductsByNameRequest) returns (SearchProductsByNameResponse) {
         option (google.api.http) = {
-            get: "/v1/product/search"
+            get: "/v1/counter/product/search"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags: ["Product"]
@@ -64,9 +64,9 @@ service CounterService {
         };
     }
 
-    rpc ListProductsByCategory (ListProductsByCategoryRequest) returns (SearchProductsByNameResponse) {
+    rpc SearchProductsByCategory (SearchProductsByCategoryRequest) returns (SearchProductsByNameResponse) {
         option (google.api.http) = {
-            get: "/v1/product/category"
+            get: "/v1/counter/product/category"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
             tags: ["Product"]
@@ -77,12 +77,13 @@ service CounterService {
 }
 
 message Product {
-    string name = 1;
-    string description = 2;
-    float price = 3;
-    string category = 4;
-    bool is_available = 5;
-    string item_type = 6;
+    int32 product_id = 1;
+    string name = 2;
+    string description = 3;
+    float price = 4;
+    string category = 5;
+    bool is_available = 6;
+    string item_type = 7;
 }
 
 message AddProductRequest {
@@ -121,7 +122,7 @@ message SearchProductsByNameResponse {
     repeated Product products = 1;
 }
 
-message ListProductsByCategoryRequest {
+message SearchProductsByCategoryRequest {
     string category_name = 1;
     int32 page = 2;
     int32 page_size = 3;
