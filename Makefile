@@ -27,7 +27,7 @@ run-api-gateway:
 run-user-service:
 	cd services/user && go run main.go
 
-run-counter-service:
-	cd services/counter && go run main.go
+run-product-service:
+	cd services/product && go run main.go
 
 .PHONY: new_migration migrateup migratedown proto mock-user-service run-user-service

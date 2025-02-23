@@ -25,7 +25,7 @@ func runGateway(config util.Config) error {
 	if err != nil {
 		return err
 	}
-	err = gen.RegisterCounterServiceHandlerFromEndpoint(ctx, mux, config.CounterServiceEndPoint, opts)
+	err = gen.RegisterProductServiceHandlerFromEndpoint(ctx, mux, config.CounterServiceEndPoint, opts)
 	if err != nil {
 		return err
 	}
