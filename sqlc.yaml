@@ -13,12 +13,12 @@ sql:
         emit_exact_table_names: false
         emit_empty_slices: true
   - schema: "db/migration/000002_add_products.up.sql"
-    queries: "services/counter/db/query/products.sql"
+    queries: "services/product/db/query/products.sql"
     engine: "postgresql"
     gen:
       go:
-        package: "counter"
-        out: "services/counter/db/sqlc"
+        package: "product"
+        out: "services/product/db/sqlc"
         emit_interface: true
         emit_json_tags: true
         emit_prepared_queries: false
@@ -29,3 +29,15 @@ sql:
             go_type:
               import: "github.com/shopspring/decimal"
               type: "Decimal"
+  - schema: "db/migration/000003_add_counter_orders.up.sql"
+    queries: "services/order/db/query/orders.sql"
+    engine: "postgresql"
+    gen:
+      go:
+        package: "orders"
+        out: "services/order/db/sqlc"
+        emit_interface: true
+        emit_json_tags: true
+        emit_prepared_queries: false
+        emit_exact_table_names: false
+        emit_empty_slices: true

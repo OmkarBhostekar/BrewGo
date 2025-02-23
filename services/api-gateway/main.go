@@ -30,6 +30,11 @@ func runGateway(config util.Config) error {
 		return err
 	}
 
+	err = gen.RegisterOrderServiceHandlerFromEndpoint(ctx, mux, config.OrderServiceEndPoint, opts)
+	if err != nil {
+		return err
+	}
+
 	protectedMux := util.AuthenticationMiddleware(config.UserServiceEndPoint, mux)
 
 	log.Info().Msg("Starting HTTP/REST gateway on :3000")

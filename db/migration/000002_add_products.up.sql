@@ -5,6 +5,7 @@ CREATE TABLE "products" (
   "price" DECIMAL NOT NULL,
   "category" VARCHAR(100) NOT NULL,
   "is_available" BOOLEAN NOT NULL DEFAULT TRUE,
+  "est_preparation_time" INT NOT NULL DEFAULT 5,
   "item_type" VARCHAR(255) NOT NULL DEFAULT 'barista', 
   "created_at" timestamptz NOT NULL DEFAULT (now()) ,
   "updated_at"  timestamptz NOT NULL DEFAULT '0001-01-01 00:00:00Z'

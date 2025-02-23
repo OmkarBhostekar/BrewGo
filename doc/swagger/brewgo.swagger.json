@@ -1,10 +1,13 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "product.proto",
+    "title": "order.proto",
     "version": "version not set"
   },
   "tags": [
+    {
+      "name": "OrderService"
+    },
     {
       "name": "ProductService"
     },
@@ -19,6 +22,112 @@
     "application/json"
   ],
   "paths": {
+    "/v1/orders": {
+      "post": {
+        "summary": "Place an order product.",
+        "description": "Use this API to place an order.",
+        "operationId": "OrderService_PlaceOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/orderOrderResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/orderPlaceOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/v1/orders/{orderId}": {
+      "get": {
+        "summary": "Get order status.",
+        "description": "Use this API to get order status.",
+        "operationId": "OrderService_GetOrderStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/orderOrderResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      },
+      "patch": {
+        "summary": "Update order status.",
+        "description": "Use this API to update order status.",
+        "operationId": "OrderService_FulfillOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/orderOrderResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrderServiceFulfillOrderBody"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
     "/v1/product": {
       "post": {
         "summary": "Create a add product.",
@@ -348,6 +457,14 @@
     }
   },
   "definitions": {
+    "OrderServiceFulfillOrderBody": {
+      "type": "object",
+      "properties": {
+        "orderStatus": {
+          "type": "string"
+        }
+      }
+    },
     "ProductServiceUpdateProductBody": {
       "type": "object",
       "properties": {
@@ -369,6 +486,68 @@
         },
         "isAvailable": {
           "type": "boolean"
+        }
+      }
+    },
+    "orderOrderItem": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "itemStatus": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "orderOrderResponse": {
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "orderStatus": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "orderItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/orderOrderItem"
+          }
+        }
+      }
+    },
+    "orderPlaceOrderRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "orderItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/orderOrderItem"
+          }
         }
       }
     },

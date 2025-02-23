@@ -2,7 +2,7 @@
 // versions:
 //   sqlc v1.27.0
 
-package counter
+package product
 
 import (
 	"context"

@@ -3,7 +3,7 @@
 //   sqlc v1.27.0
 // source: products.sql
 
-package counter
+package product
 
 import (
 	"context"
@@ -27,7 +27,7 @@ INSERT INTO products(
     $4,
     $5,
     $6
-) RETURNING id, name, description, price, category, is_available, item_type, created_at, updated_at
+) RETURNING id, name, description, price, category, is_available, est_preparation_time, item_type, created_at, updated_at
 `
 
 type AddProductParams struct {
@@ -56,6 +56,7 @@ func (q *Queries) AddProduct(ctx context.Context, arg AddProductParams) (Product
 		&i.Price,
 		&i.Category,
 		&i.IsAvailable,
+		&i.EstPreparationTime,
 		&i.ItemType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -64,7 +65,7 @@ func (q *Queries) AddProduct(ctx context.Context, arg AddProductParams) (Product
 }
 
 const deleteProduct = `-- name: DeleteProduct :one
-DELETE FROM products WHERE id = $1 RETURNING id, name, description, price, category, is_available, item_type, created_at, updated_at
+DELETE FROM products WHERE id = $1 RETURNING id, name, description, price, category, is_available, est_preparation_time, item_type, created_at, updated_at
 `
 
 func (q *Queries) DeleteProduct(ctx context.Context, id int32) (Product, error) {
@@ -77,6 +78,7 @@ func (q *Queries) DeleteProduct(ctx context.Context, id int32) (Product, error) 
 		&i.Price,
 		&i.Category,
 		&i.IsAvailable,
+		&i.EstPreparationTime,
 		&i.ItemType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -85,7 +87,7 @@ func (q *Queries) DeleteProduct(ctx context.Context, id int32) (Product, error) 
 }
 
 const getProductById = `-- name: GetProductById :one
-SELECT id, name, description, price, category, is_available, item_type, created_at, updated_at FROM products WHERE id = $1 LIMIT 1
+SELECT id, name, description, price, category, is_available, est_preparation_time, item_type, created_at, updated_at FROM products WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetProductById(ctx context.Context, id int32) (Product, error) {
@@ -98,6 +100,7 @@ func (q *Queries) GetProductById(ctx context.Context, id int32) (Product, error)
 		&i.Price,
 		&i.Category,
 		&i.IsAvailable,
+		&i.EstPreparationTime,
 		&i.ItemType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -106,7 +109,7 @@ func (q *Queries) GetProductById(ctx context.Context, id int32) (Product, error)
 }
 
 const searchProductsByCategory = `-- name: SearchProductsByCategory :many
-SELECT id, name, description, price, category, is_available, item_type, created_at, updated_at FROM products WHERE category = $1 LIMIT $3 OFFSET $2
+SELECT id, name, description, price, category, is_available, est_preparation_time, item_type, created_at, updated_at FROM products WHERE category = $1 LIMIT $3 OFFSET $2
 `
 
 type SearchProductsByCategoryParams struct {
@@ -131,6 +134,7 @@ func (q *Queries) SearchProductsByCategory(ctx context.Context, arg SearchProduc
 			&i.Price,
 			&i.Category,
 			&i.IsAvailable,
+			&i.EstPreparationTime,
 			&i.ItemType,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -149,7 +153,7 @@ func (q *Queries) SearchProductsByCategory(ctx context.Context, arg SearchProduc
 }
 
 const searchProductsByName = `-- name: SearchProductsByName :many
-SELECT id, name, description, price, category, is_available, item_type, created_at, updated_at FROM products WHERE name ILIKE '%' || $1 || '%' LIMIT $3 OFFSET $2
+SELECT id, name, description, price, category, is_available, est_preparation_time, item_type, created_at, updated_at FROM products WHERE name ILIKE '%' || $1 || '%' LIMIT $3 OFFSET $2
 `
 
 type SearchProductsByNameParams struct {
@@ -174,6 +178,7 @@ func (q *Queries) SearchProductsByName(ctx context.Context, arg SearchProductsBy
 			&i.Price,
 			&i.Category,
 			&i.IsAvailable,
+			&i.EstPreparationTime,
 			&i.ItemType,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -201,7 +206,7 @@ SET
     is_available = COALESCE($6, is_available),
     item_type = COALESCE($7, item_type)
 WHERE id = $1
-RETURNING id, name, description, price, category, is_available, item_type, created_at, updated_at
+RETURNING id, name, description, price, category, is_available, est_preparation_time, item_type, created_at, updated_at
 `
 
 type UpdateProductParams struct {
@@ -232,6 +237,7 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (P
 		&i.Price,
 		&i.Category,
 		&i.IsAvailable,
+		&i.EstPreparationTime,
 		&i.ItemType,
 		&i.CreatedAt,
 		&i.UpdatedAt,

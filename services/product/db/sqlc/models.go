@@ -2,7 +2,7 @@
 // versions:
 //   sqlc v1.27.0
 
-package counter
+package product
 
 import (
 	"time"
@@ -11,13 +11,14 @@ import (
 )
 
 type Product struct {
-	ID          int32           `json:"id"`
-	Name        string          `json:"name"`
-	Description string          `json:"description"`
-	Price       decimal.Decimal `json:"price"`
-	Category    string          `json:"category"`
-	IsAvailable bool            `json:"is_available"`
-	ItemType    string          `json:"item_type"`
-	CreatedAt   time.Time       `json:"created_at"`
-	UpdatedAt   time.Time       `json:"updated_at"`
+	ID                 int32           `json:"id"`
+	Name               string          `json:"name"`
+	Description        string          `json:"description"`
+	Price              decimal.Decimal `json:"price"`
+	Category           string          `json:"category"`
+	IsAvailable        bool            `json:"is_available"`
+	EstPreparationTime int32           `json:"est_preparation_time"`
+	ItemType           string          `json:"item_type"`
+	CreatedAt          time.Time       `json:"created_at"`
+	UpdatedAt          time.Time       `json:"updated_at"`
 }
