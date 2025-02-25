@@ -13,7 +13,7 @@ service OrderService {
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            tags: ["Product"]
+            tags: ["Order"]
             summary: "Place an order product."
             description: "Use this API to place an order."
         };
@@ -25,7 +25,7 @@ service OrderService {
             body: "*"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            tags: ["Product"]
+            tags: ["Order"]
             summary: "Update order status."
             description: "Use this API to update order status."
         };
@@ -36,7 +36,7 @@ service OrderService {
             get: "/v1/orders/{order_id}"
         };
         option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-            tags: ["Product"]
+            tags: ["Order"]
             summary: "Get order status."
             description: "Use this API to get order status."
         };
@@ -71,7 +71,7 @@ message OrderItem {
 
 message FulfillOrderRequest {
     int32 order_id = 1;
-    string order_status = 2;
+    optional string order_status = 2;
 }
 
 message GetOrderStatusRequest {

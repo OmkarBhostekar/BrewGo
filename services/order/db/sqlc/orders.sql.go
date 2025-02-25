@@ -7,6 +7,7 @@ package orders
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createOrder = `-- name: CreateOrder :one
@@ -29,6 +30,214 @@ type CreateOrderParams struct {
 
 func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (CounterOrder, error) {
 	row := q.db.QueryRowContext(ctx, createOrder, arg.UserID, arg.TotalAmount, arg.PaymentMethod)
+	var i CounterOrder
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.OrderDate,
+		&i.TotalAmount,
+		&i.PaymentMethod,
+		&i.OrderStatus,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createOrderItem = `-- name: CreateOrderItem :one
+INSERT INTO counter_order_items(
+    counter_order_id,
+    product_id,
+    quantity,
+    notes
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4
+) RETURNING id, counter_order_id, product_id, item_status, quantity, notes, created_at, updated_at
+`
+
+type CreateOrderItemParams struct {
+	CounterOrderID int32          `json:"counter_order_id"`
+	ProductID      int32          `json:"product_id"`
+	Quantity       int32          `json:"quantity"`
+	Notes          sql.NullString `json:"notes"`
+}
+
+func (q *Queries) CreateOrderItem(ctx context.Context, arg CreateOrderItemParams) (CounterOrderItem, error) {
+	row := q.db.QueryRowContext(ctx, createOrderItem,
+		arg.CounterOrderID,
+		arg.ProductID,
+		arg.Quantity,
+		arg.Notes,
+	)
+	var i CounterOrderItem
+	err := row.Scan(
+		&i.ID,
+		&i.CounterOrderID,
+		&i.ProductID,
+		&i.ItemStatus,
+		&i.Quantity,
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const deleteOrder = `-- name: DeleteOrder :exec
+DELETE FROM counter_orders WHERE id = $1
+`
+
+func (q *Queries) DeleteOrder(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, deleteOrder, id)
+	return err
+}
+
+const deleteOrderItem = `-- name: DeleteOrderItem :exec
+DELETE FROM counter_order_items WHERE id = $1
+`
+
+func (q *Queries) DeleteOrderItem(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, deleteOrderItem, id)
+	return err
+}
+
+const getOrderById = `-- name: GetOrderById :one
+SELECT id, user_id, order_date, total_amount, payment_method, order_status, created_at, updated_at FROM counter_orders WHERE id = $1
+`
+
+func (q *Queries) GetOrderById(ctx context.Context, id int32) (CounterOrder, error) {
+	row := q.db.QueryRowContext(ctx, getOrderById, id)
+	var i CounterOrder
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.OrderDate,
+		&i.TotalAmount,
+		&i.PaymentMethod,
+		&i.OrderStatus,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getOrderItemsByOrderId = `-- name: GetOrderItemsByOrderId :many
+SELECT id, counter_order_id, product_id, item_status, quantity, notes, created_at, updated_at FROM counter_order_items WHERE counter_order_id = $1
+`
+
+func (q *Queries) GetOrderItemsByOrderId(ctx context.Context, counterOrderID int32) ([]CounterOrderItem, error) {
+	rows, err := q.db.QueryContext(ctx, getOrderItemsByOrderId, counterOrderID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []CounterOrderItem{}
+	for rows.Next() {
+		var i CounterOrderItem
+		if err := rows.Scan(
+			&i.ID,
+			&i.CounterOrderID,
+			&i.ProductID,
+			&i.ItemStatus,
+			&i.Quantity,
+			&i.Notes,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getOrdersByUserId = `-- name: GetOrdersByUserId :many
+SELECT id, user_id, order_date, total_amount, payment_method, order_status, created_at, updated_at FROM counter_orders WHERE user_id = $1
+`
+
+func (q *Queries) GetOrdersByUserId(ctx context.Context, userID int32) ([]CounterOrder, error) {
+	rows, err := q.db.QueryContext(ctx, getOrdersByUserId, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []CounterOrder{}
+	for rows.Next() {
+		var i CounterOrder
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.OrderDate,
+			&i.TotalAmount,
+			&i.PaymentMethod,
+			&i.OrderStatus,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateOrderItemStatus = `-- name: UpdateOrderItemStatus :one
+UPDATE counter_order_items
+    SET item_status = $2
+    WHERE id = $1
+RETURNING id, counter_order_id, product_id, item_status, quantity, notes, created_at, updated_at
+`
+
+type UpdateOrderItemStatusParams struct {
+	ID         int32  `json:"id"`
+	ItemStatus string `json:"item_status"`
+}
+
+func (q *Queries) UpdateOrderItemStatus(ctx context.Context, arg UpdateOrderItemStatusParams) (CounterOrderItem, error) {
+	row := q.db.QueryRowContext(ctx, updateOrderItemStatus, arg.ID, arg.ItemStatus)
+	var i CounterOrderItem
+	err := row.Scan(
+		&i.ID,
+		&i.CounterOrderID,
+		&i.ProductID,
+		&i.ItemStatus,
+		&i.Quantity,
+		&i.Notes,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateOrderStatus = `-- name: UpdateOrderStatus :one
+UPDATE counter_orders
+    SET order_status = $2
+    WHERE id = $1
+RETURNING id, user_id, order_date, total_amount, payment_method, order_status, created_at, updated_at
+`
+
+type UpdateOrderStatusParams struct {
+	ID          int32  `json:"id"`
+	OrderStatus string `json:"order_status"`
+}
+
+func (q *Queries) UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (CounterOrder, error) {
+	row := q.db.QueryRowContext(ctx, updateOrderStatus, arg.ID, arg.OrderStatus)
 	var i CounterOrder
 	err := row.Scan(
 		&i.ID,

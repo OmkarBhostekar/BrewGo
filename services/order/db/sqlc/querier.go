@@ -10,6 +10,14 @@ import (
 
 type Querier interface {
 	CreateOrder(ctx context.Context, arg CreateOrderParams) (CounterOrder, error)
+	CreateOrderItem(ctx context.Context, arg CreateOrderItemParams) (CounterOrderItem, error)
+	DeleteOrder(ctx context.Context, id int32) error
+	DeleteOrderItem(ctx context.Context, id int32) error
+	GetOrderById(ctx context.Context, id int32) (CounterOrder, error)
+	GetOrderItemsByOrderId(ctx context.Context, counterOrderID int32) ([]CounterOrderItem, error)
+	GetOrdersByUserId(ctx context.Context, userID int32) ([]CounterOrder, error)
+	UpdateOrderItemStatus(ctx context.Context, arg UpdateOrderItemStatusParams) (CounterOrderItem, error)
+	UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (CounterOrder, error)
 }
 
 var _ Querier = (*Queries)(nil)

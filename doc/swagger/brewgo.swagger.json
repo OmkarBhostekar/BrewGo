@@ -52,7 +52,7 @@
           }
         ],
         "tags": [
-          "Product"
+          "Order"
         ]
       }
     },
@@ -85,7 +85,7 @@
           }
         ],
         "tags": [
-          "Product"
+          "Order"
         ]
       },
       "patch": {
@@ -124,7 +124,7 @@
           }
         ],
         "tags": [
-          "Product"
+          "Order"
         ]
       }
     },

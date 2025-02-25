@@ -4,6 +4,7 @@ go 1.23.2
 
 require (
 	github.com/golang-migrate/migrate/v4 v4.18.2
+	github.com/golang/mock v1.6.0
 	github.com/omkarbhostekar/brewgo v0.0.0-00010101000000-000000000000
 	github.com/rs/zerolog v1.33.0
 	github.com/spf13/viper v1.19.0
