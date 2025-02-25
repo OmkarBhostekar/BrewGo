@@ -8,6 +8,7 @@ import (
 
 type Store interface {
 	Querier
+	PlaceOrderTx(ctx context.Context, arg PlaceOrderTxParams) (PlaceOrderTxResult, error)
 }
 
 type SQLStore struct {

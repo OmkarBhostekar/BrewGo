@@ -7,6 +7,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/omkarbhostekar/brewgo v0.0.0-00010101000000-000000000000
 	github.com/rs/zerolog v1.33.0
+	github.com/shopspring/decimal v1.2.0
 	github.com/spf13/viper v1.19.0
 	google.golang.org/grpc v1.70.0
 )

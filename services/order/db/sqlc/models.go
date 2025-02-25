@@ -7,17 +7,19 @@ package orders
 import (
 	"database/sql"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 type CounterOrder struct {
-	ID            int32     `json:"id"`
-	UserID        int32     `json:"user_id"`
-	OrderDate     time.Time `json:"order_date"`
-	TotalAmount   string    `json:"total_amount"`
-	PaymentMethod string    `json:"payment_method"`
-	OrderStatus   string    `json:"order_status"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	ID            int32           `json:"id"`
+	UserID        int32           `json:"user_id"`
+	OrderDate     time.Time       `json:"order_date"`
+	TotalAmount   decimal.Decimal `json:"total_amount"`
+	PaymentMethod string          `json:"payment_method"`
+	OrderStatus   string          `json:"order_status"`
+	CreatedAt     time.Time       `json:"created_at"`
+	UpdatedAt     time.Time       `json:"updated_at"`
 }
 
 type CounterOrderItem struct {
@@ -29,4 +31,17 @@ type CounterOrderItem struct {
 	Notes          sql.NullString `json:"notes"`
 	CreatedAt      time.Time      `json:"created_at"`
 	UpdatedAt      time.Time      `json:"updated_at"`
+}
+
+type Product struct {
+	ID                 int32           `json:"id"`
+	Name               string          `json:"name"`
+	Description        string          `json:"description"`
+	Price              decimal.Decimal `json:"price"`
+	Category           string          `json:"category"`
+	IsAvailable        bool            `json:"is_available"`
+	EstPreparationTime int32           `json:"est_preparation_time"`
+	ItemType           string          `json:"item_type"`
+	CreatedAt          time.Time       `json:"created_at"`
+	UpdatedAt          time.Time       `json:"updated_at"`
 }

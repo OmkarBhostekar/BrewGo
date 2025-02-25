@@ -8,7 +8,23 @@ package orders
 import (
 	"context"
 	"database/sql"
+	"time"
+
+	"github.com/shopspring/decimal"
 )
+
+const areAllOrderItemsReady = `-- name: AreAllOrderItemsReady :one
+SELECT BOOL_AND(item_status = 'ready') 
+FROM counter_order_items 
+WHERE counter_order_id = $1
+`
+
+func (q *Queries) AreAllOrderItemsReady(ctx context.Context, counterOrderID int32) (bool, error) {
+	row := q.db.QueryRowContext(ctx, areAllOrderItemsReady, counterOrderID)
+	var bool_and bool
+	err := row.Scan(&bool_and)
+	return bool_and, err
+}
 
 const createOrder = `-- name: CreateOrder :one
 INSERT INTO counter_orders(
@@ -23,9 +39,9 @@ INSERT INTO counter_orders(
 `
 
 type CreateOrderParams struct {
-	UserID        int32  `json:"user_id"`
-	TotalAmount   string `json:"total_amount"`
-	PaymentMethod string `json:"payment_method"`
+	UserID        int32           `json:"user_id"`
+	TotalAmount   decimal.Decimal `json:"total_amount"`
+	PaymentMethod string          `json:"payment_method"`
 }
 
 func (q *Queries) CreateOrder(ctx context.Context, arg CreateOrderParams) (CounterOrder, error) {
@@ -125,18 +141,37 @@ func (q *Queries) GetOrderById(ctx context.Context, id int32) (CounterOrder, err
 }
 
 const getOrderItemsByOrderId = `-- name: GetOrderItemsByOrderId :many
-SELECT id, counter_order_id, product_id, item_status, quantity, notes, created_at, updated_at FROM counter_order_items WHERE counter_order_id = $1
+SELECT 
+    coi.id, coi.counter_order_id, coi.product_id, coi.item_status, coi.quantity, coi.notes, coi.created_at, coi.updated_at,
+    p.name as product_name,
+    p.price as product_price
+FROM counter_order_items coi
+JOIN products p ON coi.product_id = p.id
+WHERE coi.counter_order_id = $1
 `
 
-func (q *Queries) GetOrderItemsByOrderId(ctx context.Context, counterOrderID int32) ([]CounterOrderItem, error) {
+type GetOrderItemsByOrderIdRow struct {
+	ID             int32           `json:"id"`
+	CounterOrderID int32           `json:"counter_order_id"`
+	ProductID      int32           `json:"product_id"`
+	ItemStatus     string          `json:"item_status"`
+	Quantity       int32           `json:"quantity"`
+	Notes          sql.NullString  `json:"notes"`
+	CreatedAt      time.Time       `json:"created_at"`
+	UpdatedAt      time.Time       `json:"updated_at"`
+	ProductName    string          `json:"product_name"`
+	ProductPrice   decimal.Decimal `json:"product_price"`
+}
+
+func (q *Queries) GetOrderItemsByOrderId(ctx context.Context, counterOrderID int32) ([]GetOrderItemsByOrderIdRow, error) {
 	rows, err := q.db.QueryContext(ctx, getOrderItemsByOrderId, counterOrderID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []CounterOrderItem{}
+	items := []GetOrderItemsByOrderIdRow{}
 	for rows.Next() {
-		var i CounterOrderItem
+		var i GetOrderItemsByOrderIdRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.CounterOrderID,
@@ -146,6 +181,8 @@ func (q *Queries) GetOrderItemsByOrderId(ctx context.Context, counterOrderID int
 			&i.Notes,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ProductName,
+			&i.ProductPrice,
 		); err != nil {
 			return nil, err
 		}
@@ -196,6 +233,58 @@ func (q *Queries) GetOrdersByUserId(ctx context.Context, userID int32) ([]Counte
 	return items, nil
 }
 
+const getTotalAmountByOrderId = `-- name: GetTotalAmountByOrderId :one
+SELECT SUM(quantity * price) as total_amount FROM counter_order_items coi
+JOIN products p ON coi.product_id = p.id
+WHERE coi.counter_order_id = $1
+`
+
+func (q *Queries) GetTotalAmountByOrderId(ctx context.Context, counterOrderID int32) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getTotalAmountByOrderId, counterOrderID)
+	var total_amount int64
+	err := row.Scan(&total_amount)
+	return total_amount, err
+}
+
+const updateOrder = `-- name: UpdateOrder :one
+UPDATE counter_orders
+SET 
+    payment_method = COALESCE($2, payment_method),
+    order_status = COALESCE($3, order_status),
+    total_amount = COALESCE($4, total_amount),
+    updated_at = now()
+WHERE id = $1
+RETURNING id, user_id, order_date, total_amount, payment_method, order_status, created_at, updated_at
+`
+
+type UpdateOrderParams struct {
+	ID            int32           `json:"id"`
+	PaymentMethod sql.NullString  `json:"payment_method"`
+	OrderStatus   sql.NullString  `json:"order_status"`
+	TotalAmount   decimal.Decimal `json:"total_amount"`
+}
+
+func (q *Queries) UpdateOrder(ctx context.Context, arg UpdateOrderParams) (CounterOrder, error) {
+	row := q.db.QueryRowContext(ctx, updateOrder,
+		arg.ID,
+		arg.PaymentMethod,
+		arg.OrderStatus,
+		arg.TotalAmount,
+	)
+	var i CounterOrder
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.OrderDate,
+		&i.TotalAmount,
+		&i.PaymentMethod,
+		&i.OrderStatus,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const updateOrderItemStatus = `-- name: UpdateOrderItemStatus :one
 UPDATE counter_order_items
     SET item_status = $2
@@ -218,34 +307,6 @@ func (q *Queries) UpdateOrderItemStatus(ctx context.Context, arg UpdateOrderItem
 		&i.ItemStatus,
 		&i.Quantity,
 		&i.Notes,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const updateOrderStatus = `-- name: UpdateOrderStatus :one
-UPDATE counter_orders
-    SET order_status = $2
-    WHERE id = $1
-RETURNING id, user_id, order_date, total_amount, payment_method, order_status, created_at, updated_at
-`
-
-type UpdateOrderStatusParams struct {
-	ID          int32  `json:"id"`
-	OrderStatus string `json:"order_status"`
-}
-
-func (q *Queries) UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) (CounterOrder, error) {
-	row := q.db.QueryRowContext(ctx, updateOrderStatus, arg.ID, arg.OrderStatus)
-	var i CounterOrder
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.OrderDate,
-		&i.TotalAmount,
-		&i.PaymentMethod,
-		&i.OrderStatus,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

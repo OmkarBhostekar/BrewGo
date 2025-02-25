@@ -29,7 +29,9 @@ sql:
             go_type:
               import: "github.com/shopspring/decimal"
               type: "Decimal"
-  - schema: "db/migration/000003_add_counter_orders.up.sql"
+  - schema: 
+    - "db/migration/000003_add_counter_orders.up.sql"
+    - "db/migration/000002_add_products.up.sql"
     queries: "services/order/db/query/orders.sql"
     engine: "postgresql"
     gen:
@@ -41,3 +43,12 @@ sql:
         emit_prepared_queries: false
         emit_exact_table_names: false
         emit_empty_slices: true
+        overrides:
+          - column: "counter_orders.total_amount"
+            go_type:
+              import: "github.com/shopspring/decimal"
+              type: "Decimal"
+          - column: "products.price"
+            go_type:
+              import: "github.com/shopspring/decimal"
+              type: "Decimal"

@@ -9,10 +9,14 @@ INSERT INTO counter_orders(
     $3
 ) RETURNING *;
 
--- name: UpdateOrderStatus :one
+-- name: UpdateOrder :one
 UPDATE counter_orders
-    SET order_status = $2
-    WHERE id = $1
+SET 
+    payment_method = COALESCE(sqlc.narg(payment_method), payment_method),
+    order_status = COALESCE(sqlc.narg(order_status), order_status),
+    total_amount = COALESCE(sqlc.narg(total_amount), total_amount),
+    updated_at = now()
+WHERE id = $1
 RETURNING *;
 
 -- name: GetOrderById :one
@@ -38,7 +42,23 @@ INSERT INTO counter_order_items(
 ) RETURNING *;
 
 -- name: GetOrderItemsByOrderId :many
-SELECT * FROM counter_order_items WHERE counter_order_id = $1;
+SELECT 
+    coi.*,
+    p.name as product_name,
+    p.price as product_price
+FROM counter_order_items coi
+JOIN products p ON coi.product_id = p.id
+WHERE coi.counter_order_id = $1;
+
+-- name: GetTotalAmountByOrderId :one
+SELECT SUM(quantity * price) as total_amount FROM counter_order_items coi
+JOIN products p ON coi.product_id = p.id
+WHERE coi.counter_order_id = $1;
+
+-- name: AreAllOrderItemsReady :one
+SELECT BOOL_AND(item_status = 'ready') 
+FROM counter_order_items 
+WHERE counter_order_id = $1;
 
 -- name: UpdateOrderItemStatus :one
 UPDATE counter_order_items

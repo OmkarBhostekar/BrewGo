@@ -31,7 +31,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/orderOrderResponse"
+              "$ref": "#/definitions/orderPlaceOrderResponse"
             }
           },
           "default": {
@@ -489,12 +489,19 @@
         }
       }
     },
-    "orderOrderItem": {
+    "orderOrderItemResponse": {
       "type": "object",
       "properties": {
         "productId": {
           "type": "integer",
           "format": "int32"
+        },
+        "productName": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number",
+          "format": "float"
         },
         "quantity": {
           "type": "integer",
@@ -522,6 +529,9 @@
         "orderStatus": {
           "type": "string"
         },
+        "paymentMethod": {
+          "type": "string"
+        },
         "updatedAt": {
           "type": "string",
           "format": "date-time"
@@ -530,8 +540,24 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/orderOrderItem"
+            "$ref": "#/definitions/orderOrderItemResponse"
           }
+        }
+      }
+    },
+    "orderPlaceOrderItem": {
+      "type": "object",
+      "properties": {
+        "productId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "notes": {
+          "type": "string"
         }
       }
     },
@@ -546,7 +572,36 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/orderOrderItem"
+            "$ref": "#/definitions/orderPlaceOrderItem"
+          }
+        },
+        "paymentMethod": {
+          "type": "string"
+        }
+      }
+    },
+    "orderPlaceOrderResponse": {
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "orderStatus": {
+          "type": "string"
+        },
+        "paymentMethod": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "orderItems": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/orderPlaceOrderItem"
           }
         }
       }
