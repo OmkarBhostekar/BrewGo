@@ -67,8 +67,9 @@ message OrderResponse {
     int32 order_id = 1;
     string order_status = 2;
     string payment_method = 3;
-    google.protobuf.Timestamp updated_at = 4;
-    repeated OrderItemResponse order_items = 5;
+    float total_amount = 4;
+    google.protobuf.Timestamp updated_at = 5;
+    repeated OrderItemResponse order_items = 6;
 }
 
 message OrderItemResponse {

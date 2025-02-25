@@ -120,24 +120,93 @@ func (q *Queries) DeleteOrderItem(ctx context.Context, id int32) error {
 	return err
 }
 
-const getOrderById = `-- name: GetOrderById :one
-SELECT id, user_id, order_date, total_amount, payment_method, order_status, created_at, updated_at FROM counter_orders WHERE id = $1
+const getOrderById = `-- name: GetOrderById :many
+SELECT 
+    o.id AS order_id,
+    o.user_id,
+    o.order_date,
+    o.total_amount,
+    o.payment_method,
+    o.order_status,
+    o.created_at AS order_created_at,
+    o.updated_at AS order_updated_at,
+    oi.id AS item_id,
+    oi.counter_order_id,
+    oi.product_id,
+    oi.item_status,
+    oi.quantity,
+    oi.notes,
+    oi.created_at AS item_created_at,
+    oi.updated_at AS item_updated_at,
+    p.name AS product_name,
+    p.price AS product_price
+FROM counter_orders o
+LEFT JOIN counter_order_items oi ON o.id = oi.counter_order_id
+LEFT JOIN products p ON oi.product_id = p.id
+WHERE o.id = $1
 `
 
-func (q *Queries) GetOrderById(ctx context.Context, id int32) (CounterOrder, error) {
-	row := q.db.QueryRowContext(ctx, getOrderById, id)
-	var i CounterOrder
-	err := row.Scan(
-		&i.ID,
-		&i.UserID,
-		&i.OrderDate,
-		&i.TotalAmount,
-		&i.PaymentMethod,
-		&i.OrderStatus,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+type GetOrderByIdRow struct {
+	OrderID        int32           `json:"order_id"`
+	UserID         int32           `json:"user_id"`
+	OrderDate      time.Time       `json:"order_date"`
+	TotalAmount    decimal.Decimal `json:"total_amount"`
+	PaymentMethod  string          `json:"payment_method"`
+	OrderStatus    string          `json:"order_status"`
+	OrderCreatedAt time.Time       `json:"order_created_at"`
+	OrderUpdatedAt time.Time       `json:"order_updated_at"`
+	ItemID         sql.NullInt32   `json:"item_id"`
+	CounterOrderID sql.NullInt32   `json:"counter_order_id"`
+	ProductID      sql.NullInt32   `json:"product_id"`
+	ItemStatus     sql.NullString  `json:"item_status"`
+	Quantity       sql.NullInt32   `json:"quantity"`
+	Notes          sql.NullString  `json:"notes"`
+	ItemCreatedAt  sql.NullTime    `json:"item_created_at"`
+	ItemUpdatedAt  sql.NullTime    `json:"item_updated_at"`
+	ProductName    sql.NullString  `json:"product_name"`
+	ProductPrice   decimal.Decimal `json:"product_price"`
+}
+
+func (q *Queries) GetOrderById(ctx context.Context, id int32) ([]GetOrderByIdRow, error) {
+	rows, err := q.db.QueryContext(ctx, getOrderById, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetOrderByIdRow{}
+	for rows.Next() {
+		var i GetOrderByIdRow
+		if err := rows.Scan(
+			&i.OrderID,
+			&i.UserID,
+			&i.OrderDate,
+			&i.TotalAmount,
+			&i.PaymentMethod,
+			&i.OrderStatus,
+			&i.OrderCreatedAt,
+			&i.OrderUpdatedAt,
+			&i.ItemID,
+			&i.CounterOrderID,
+			&i.ProductID,
+			&i.ItemStatus,
+			&i.Quantity,
+			&i.Notes,
+			&i.ItemCreatedAt,
+			&i.ItemUpdatedAt,
+			&i.ProductName,
+			&i.ProductPrice,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getOrderItemsByOrderId = `-- name: GetOrderItemsByOrderId :many

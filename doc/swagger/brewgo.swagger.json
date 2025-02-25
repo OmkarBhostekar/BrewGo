@@ -532,6 +532,10 @@
         "paymentMethod": {
           "type": "string"
         },
+        "totalAmount": {
+          "type": "number",
+          "format": "float"
+        },
         "updatedAt": {
           "type": "string",
           "format": "date-time"

@@ -19,8 +19,30 @@ SET
 WHERE id = $1
 RETURNING *;
 
--- name: GetOrderById :one
-SELECT * FROM counter_orders WHERE id = $1;
+-- name: GetOrderById :many
+SELECT 
+    o.id AS order_id,
+    o.user_id,
+    o.order_date,
+    o.total_amount,
+    o.payment_method,
+    o.order_status,
+    o.created_at AS order_created_at,
+    o.updated_at AS order_updated_at,
+    oi.id AS item_id,
+    oi.counter_order_id,
+    oi.product_id,
+    oi.item_status,
+    oi.quantity,
+    oi.notes,
+    oi.created_at AS item_created_at,
+    oi.updated_at AS item_updated_at,
+    p.name AS product_name,
+    p.price AS product_price
+FROM counter_orders o
+LEFT JOIN counter_order_items oi ON o.id = oi.counter_order_id
+LEFT JOIN products p ON oi.product_id = p.id
+WHERE o.id = $1;
 
 -- name: DeleteOrder :exec
 DELETE FROM counter_orders WHERE id = $1;
