@@ -14,7 +14,7 @@ func (server *UserServer) GetUserById(ctx context.Context, req *gen.GetUserByIdR
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "unauthenticated %s", err)
 	}
-	if role != "admin" {
+	if role != "admin" && role != "service" {
 		return nil, status.Errorf(codes.PermissionDenied, "you're not authorized to complete this action")
 	}
 	

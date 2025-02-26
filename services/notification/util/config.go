@@ -5,7 +5,9 @@ import "github.com/spf13/viper"
 type Config struct {
 	Environment         string `mapstructure:"ENVIRONMENT"`
 	RabbitMQAddress     string `mapstructure:"RABBITMQ_ADDRESS"`
-	UserServiceEndPoint string `mapstructure:"USER_SERVICE_ENDPOINT"`
+	EmailSenderName     string `mapstructure:"EMAIL_SENDER_NAME"`
+	EmailSenderAddress  string `mapstructure:"EMAIL_SENDER_ADDRESS"`
+	EmailSenderPassword string `mapstructure:"EMAIL_SENDER_PASSWORD"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

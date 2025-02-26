@@ -8,6 +8,7 @@ type Config struct {
 	DBSource            string `mapstructure:"DB_SOURCE"`
 	RabbitMQAddress     string `mapstructure:"RABBITMQ_ADDRESS"`
 	UserServiceEndPoint string `mapstructure:"USER_SERVICE_ENDPOINT"`
+	ServiceToken        string `mapstructure:"SERVICE_TOKEN"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

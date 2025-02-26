@@ -3,10 +3,11 @@ package workers
 import (
 	"encoding/json"
 
+	"github.com/omkarbhostekar/brewgo/notification/handlers"
+	"github.com/omkarbhostekar/brewgo/notification/util"
+	"github.com/omkarbhostekar/brewgo/rabbitmq"
 	"github.com/rs/zerolog/log"
 	"github.com/streadway/amqp"
-	"github.com/omkarbhostekar/brewgo/rabbitmq"
-	"github.com/omkarbhostekar/brewgo/notification/util"
 )
 
 func NotificationWorker(msg amqp.Delivery, config util.Config) error {
@@ -20,6 +21,7 @@ func NotificationWorker(msg amqp.Delivery, config util.Config) error {
 
 	if data.Type == "email" {
 		log.Info().Msgf("sending email to %s with %s", data.EmailData.To, data.EmailData.Body)
+		handlers.SendEmail(data.EmailData, config)
 	} else if data.Type == "sms" {
 		log.Info().Msgf("sending sms to %s", data.SmsData.To)
 	} else {

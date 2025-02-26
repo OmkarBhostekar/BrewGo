@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 
 	db "github.com/omkarbhostekar/brewgo/order/db/sqlc"
 	"github.com/omkarbhostekar/brewgo/order/util"
@@ -71,12 +72,12 @@ func HandleOrderItemUpdate(body []byte, config util.Config, store db.Store, send
 
 func getNotificationEventData(userId int32, config util.Config, message string) *string {
 	// dial user service to get user details, email, phone number
-	result, err := getUserFromUserService(config.UserServiceEndPoint, userId)
+	result, err := getUserFromUserService(config.UserServiceEndPoint, config.ServiceToken, userId)
 	if err != nil {
 		log.Error().Err(err).Msg("cannot get user")
 		return nil
 	}
-	
+
 	email := result.User.GetEmail()
 
 	// will send email notification for now
@@ -85,7 +86,7 @@ func getNotificationEventData(userId int32, config util.Config, message string) 
 		EmailData: rabbitmq.EmailNotification{
 			To:      email,
 			Subject: "Update on your order",
-			Body:    message,
+			Body:    fmt.Sprintf("<p>Hello %s, \n%s</p>", result.User.Name, message),
 		},
 	}
 	jsonData, err := json.Marshal(data)
@@ -107,7 +108,7 @@ func countReadyItems(items []db.GetOrderDetailByIdRow) int {
 	return count
 }
 
-func getUserFromUserService(userServiceEndPoint string, userId int32) (*gen.GetUserByPhoneNumberResponse, error) {
+func getUserFromUserService(userServiceEndPoint string, serviceToken string, userId int32) (*gen.GetUserByPhoneNumberResponse, error) {
 	// Connect to UserService
 	conn, err := grpc.Dial(userServiceEndPoint, grpc.WithInsecure())
 	if err != nil {
@@ -119,7 +120,7 @@ func getUserFromUserService(userServiceEndPoint string, userId int32) (*gen.GetU
 	client := gen.NewUserServiceClient(conn)
 
 	// Attach "X-Role=admin" in gRPC metadata
-	md := metadata.Pairs("X-Role", "admin")
+	md := metadata.Pairs("X-Service-Token", serviceToken)
 	ctx := metadata.NewOutgoingContext(context.Background(), md)
 
 	// Call the gRPC method with metadata

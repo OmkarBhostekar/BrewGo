@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/omkarbhostekar/brewgo/services/user/token"
+	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -48,7 +49,14 @@ func (server *UserServer) getRoleFromHeader(Ctx context.Context) (string, error)
 	if !ok {
 		return "", fmt.Errorf("metadata is not provided")
 	}
+
 	values := mtdt.Get("X-Role")
+	serviceToken := mtdt.Get("X-Service-Token")
+	log.Info().Msgf("service token: %v", serviceToken)
+	if len(serviceToken) != 0 && serviceToken[0] == server.config.ServiceToken {
+		return "service", nil
+	}
+
 	if len(values) == 0 {
 		return "", fmt.Errorf("role is not provided")
 	}
