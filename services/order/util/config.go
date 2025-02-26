@@ -3,10 +3,11 @@ package util
 import "github.com/spf13/viper"
 
 type Config struct {
-	Environment       string `mapstructure:"ENVIRONMENT"`
-	DBDriver          string `mapstructure:"DB_DRIVER"`
-	DBSource          string `mapstructure:"DB_SOURCE"`
-	RabbitMQAddress   string `mapstructure:"RABBITMQ_ADDRESS"`
+	Environment         string `mapstructure:"ENVIRONMENT"`
+	DBDriver            string `mapstructure:"DB_DRIVER"`
+	DBSource            string `mapstructure:"DB_SOURCE"`
+	RabbitMQAddress     string `mapstructure:"RABBITMQ_ADDRESS"`
+	UserServiceEndPoint string `mapstructure:"USER_SERVICE_ENDPOINT"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

@@ -28,6 +28,16 @@ service UserService {
             description: "Use this API to get user by phone number."
         };
     }
+    rpc GetUserById (GetUserByIdRequest) returns (GetUserByPhoneNumberResponse) {
+        option (google.api.http) = {
+            get: "/v1/users/{user_id}"
+        };
+        option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+            tags: ["User"]
+            summary: "Get user by id"
+            description: "Use this API to get user by id."
+        };
+    }
     rpc LoginUser (LoginUserRequest) returns (LoginUserResponse) {
         option (google.api.http) = {
             post: "/v1/users/login"
@@ -57,6 +67,10 @@ message CreateUserResponse {
 
 message GetUserByPhoneNumberRequest {
     string phone_number = 1;
+}
+
+message GetUserByIdRequest {
+    int32 user_id = 1;
 }
 
 message GetUserByPhoneNumberResponse {

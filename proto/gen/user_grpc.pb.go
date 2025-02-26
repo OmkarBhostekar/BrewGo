@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	UserService_CreateUser_FullMethodName           = "/brew.go.proto.user.UserService/CreateUser"
 	UserService_GetUserByPhoneNumber_FullMethodName = "/brew.go.proto.user.UserService/GetUserByPhoneNumber"
+	UserService_GetUserById_FullMethodName          = "/brew.go.proto.user.UserService/GetUserById"
 	UserService_LoginUser_FullMethodName            = "/brew.go.proto.user.UserService/LoginUser"
 	UserService_ValidateToken_FullMethodName        = "/brew.go.proto.user.UserService/ValidateToken"
 )
@@ -31,6 +32,7 @@ const (
 type UserServiceClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	GetUserByPhoneNumber(ctx context.Context, in *GetUserByPhoneNumberRequest, opts ...grpc.CallOption) (*GetUserByPhoneNumberResponse, error)
+	GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByPhoneNumberResponse, error)
 	LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error)
 	// internal rpc for validating token
 	ValidateToken(ctx context.Context, in *ValidateTokenRequest, opts ...grpc.CallOption) (*ValidateTokenResponse, error)
@@ -64,6 +66,16 @@ func (c *userServiceClient) GetUserByPhoneNumber(ctx context.Context, in *GetUse
 	return out, nil
 }
 
+func (c *userServiceClient) GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserByPhoneNumberResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserByPhoneNumberResponse)
+	err := c.cc.Invoke(ctx, UserService_GetUserById_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LoginUserResponse)
@@ -90,6 +102,7 @@ func (c *userServiceClient) ValidateToken(ctx context.Context, in *ValidateToken
 type UserServiceServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	GetUserByPhoneNumber(context.Context, *GetUserByPhoneNumberRequest) (*GetUserByPhoneNumberResponse, error)
+	GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByPhoneNumberResponse, error)
 	LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error)
 	// internal rpc for validating token
 	ValidateToken(context.Context, *ValidateTokenRequest) (*ValidateTokenResponse, error)
@@ -108,6 +121,9 @@ func (UnimplementedUserServiceServer) CreateUser(context.Context, *CreateUserReq
 }
 func (UnimplementedUserServiceServer) GetUserByPhoneNumber(context.Context, *GetUserByPhoneNumberRequest) (*GetUserByPhoneNumberResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserByPhoneNumber not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserById(context.Context, *GetUserByIdRequest) (*GetUserByPhoneNumberResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserById not implemented")
 }
 func (UnimplementedUserServiceServer) LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
@@ -172,6 +188,24 @@ func _UserService_GetUserByPhoneNumber_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetUserById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserById(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserById_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserById(ctx, req.(*GetUserByIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_LoginUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoginUserRequest)
 	if err := dec(in); err != nil {
@@ -222,6 +256,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserByPhoneNumber",
 			Handler:    _UserService_GetUserByPhoneNumber_Handler,
+		},
+		{
+			MethodName: "GetUserById",
+			Handler:    _UserService_GetUserById_Handler,
 		},
 		{
 			MethodName: "LoginUser",

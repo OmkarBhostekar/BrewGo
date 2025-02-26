@@ -42,7 +42,7 @@ func main() {
 	}
 	log.Info().Msg("connected to rabbitmq")
 
-	go listenOrderItemUpdates(rmq)
+	go listenOrderItemUpdates(rmq, config, store)
 	runGrpcServer(config, store, rmq)
 }
 
@@ -67,11 +67,11 @@ func runGrpcServer(config util.Config, store db.Store, rmq *rabbitmq.RabbitMQ) {
 	defer rmq.Close()
 }
 
-func listenOrderItemUpdates(rmq *rabbitmq.RabbitMQ) {
+func listenOrderItemUpdates(rmq *rabbitmq.RabbitMQ, config util.Config, store db.Store) {
 	err := rmq.Consume(rabbitmq.QueueOrderItemStatus, rabbitmq.OrderItemStatusUpdated, func(msg amqp.Delivery) {
-		body := string(msg.Body)
-		log.Info().Msgf("received order item update body: %s", body)
-		err := api.HandleOrderItemUpdate(body)
+		err := api.HandleOrderItemUpdate(msg.Body, config, store, func(data string) {
+			publishNotificationEvent(rmq, data)
+		})
 		if err != nil {
 			log.Error().Err(err).Msg("cannot handle order item update")
 		}
@@ -81,4 +81,11 @@ func listenOrderItemUpdates(rmq *rabbitmq.RabbitMQ) {
 		log.Fatal().Err(err).Msg("cannot consume message")
 	}
 	select {}
+}
+
+func publishNotificationEvent(rmq *rabbitmq.RabbitMQ, data string) {
+	err := rmq.Publish(rabbitmq.SendNotification, data)
+	if err != nil {
+		log.Error().Err(err).Msg("cannot publish message")
+	}
 }

@@ -33,4 +33,10 @@ run-product-service:
 run-order-service:
 	cd services/order && go run main.go
 
+run-kitchen-worker:
+	cd services/kitchen && go run main.go
+
+run-notification-worker:
+	cd services/notification && go run main.go
+
 .PHONY: new_migration migrateup migratedown proto mock-user-service run-user-service

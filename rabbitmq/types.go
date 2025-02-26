@@ -27,7 +27,18 @@ type OrderItemStatusEventData struct {
 }
 
 type NotificationEventData struct {
-	UserId  int32  `json:"user_id"`
+	Type      string            `json:"type"`
+	EmailData EmailNotification `json:"email_data"`
+	SmsData   SmsNotification   `json:"sms_data"`
+}
+
+type EmailNotification struct {
+	To      string `json:"to"`
+	Subject string `json:"subject"`
+	Body    string `json:"body"`
+}
+
+type SmsNotification struct {
+	To      string `json:"to"`
 	Message string `json:"message"`
-	Type    string `json:"type"`
 }

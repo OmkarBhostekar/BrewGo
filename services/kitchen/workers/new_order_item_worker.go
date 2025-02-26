@@ -23,8 +23,6 @@ func NewOrderItemWorker(msg amqp.Delivery, config util.Config, updateStatus func
 		return err
 	}
 
-	log.Info().Msgf("received new order item: %v", data)
-
 	// get product details
 	conn, err := grpc.Dial(config.ProductServiceEndPoint, grpc.WithInsecure())
 	if err != nil {
@@ -33,7 +31,7 @@ func NewOrderItemWorker(msg amqp.Delivery, config util.Config, updateStatus func
 	}
 	defer conn.Close()
 
-	log.Info().Msgf("product id: %d", data.ProductId)
+	log.Info().Msgf("received order for product id: %d", data.ProductId)
 	client := gen.NewProductServiceClient(conn)
 	product, err := client.GetProduct(context.Background(), &gen.GetProductRequest{ProductId: data.ProductId})
 	if err != nil {
