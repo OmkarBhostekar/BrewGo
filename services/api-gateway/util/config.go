@@ -9,7 +9,7 @@ import (
 type Config struct {
 	Environment            string        `mapstructure:"ENVIRONMENT"`
 	UserServiceEndPoint    string        `mapstructure:"USER_SERVICE_ENDPOINT"`
-	CounterServiceEndPoint string        `mapstructure:"COUNTER_SERVICE_ENDPOINT"`
+	ProductServiceEndPoint string        `mapstructure:"PRODUCT_SERVICE_ENDPOINT"`
 	OrderServiceEndPoint   string        `mapstructure:"ORDER_SERVICE_ENDPOINT"`
 	TokenSymmetricKey      string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
 	AccessTokenDuration    time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`

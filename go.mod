@@ -5,6 +5,7 @@ go 1.23.2
 require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.1
 	github.com/rakyll/statik v0.1.7
+	github.com/streadway/amqp v1.1.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20250207221924-e9438ea467c6
 	google.golang.org/grpc v1.70.0
 	google.golang.org/protobuf v1.36.5

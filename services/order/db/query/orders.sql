@@ -19,7 +19,7 @@ SET
 WHERE id = $1
 RETURNING *;
 
--- name: GetOrderById :many
+-- name: GetOrderDetailById :many
 SELECT 
     o.id AS order_id,
     o.user_id,

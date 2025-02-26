@@ -6,6 +6,7 @@ type Config struct {
 	Environment       string `mapstructure:"ENVIRONMENT"`
 	DBDriver          string `mapstructure:"DB_DRIVER"`
 	DBSource          string `mapstructure:"DB_SOURCE"`
+	RabbitMQAddress   string `mapstructure:"RABBITMQ_ADDRESS"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

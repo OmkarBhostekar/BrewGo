@@ -6,12 +6,14 @@ import (
 	"os"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	"github.com/omkarbhostekar/brewgo/proto/gen"
 	"github.com/omkarbhostekar/brewgo/order/api"
 	db "github.com/omkarbhostekar/brewgo/order/db/sqlc"
 	"github.com/omkarbhostekar/brewgo/order/util"
+	"github.com/omkarbhostekar/brewgo/proto/gen"
+	"github.com/omkarbhostekar/brewgo/rabbitmq"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/streadway/amqp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -34,11 +36,18 @@ func main() {
 	store := db.NewStore(conn)
 	log.Info().Msg("connected to db")
 
-	runGrpcServer(config, store)
+	rmq, err := rabbitmq.NewRabbitMQ(rabbitmq.EventsExchange, config.RabbitMQAddress)
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot connect to rabbitmq")
+	}
+	log.Info().Msg("connected to rabbitmq")
+
+	go listenOrderItemUpdates(rmq)
+	runGrpcServer(config, store, rmq)
 }
 
-func runGrpcServer(config util.Config, store db.Store) {
-	server, err := api.NewServer(config, store)
+func runGrpcServer(config util.Config, store db.Store, rmq *rabbitmq.RabbitMQ) {
+	server, err := api.NewServer(config, store, rmq)
 	if err != nil {
 		log.Fatal().Msg("cannot create server")
 	}
@@ -55,5 +64,21 @@ func runGrpcServer(config util.Config, store db.Store) {
 	if err != nil {
 		log.Fatal().Msg("cannot start grpc server")
 	}
+	defer rmq.Close()
+}
 
+func listenOrderItemUpdates(rmq *rabbitmq.RabbitMQ) {
+	err := rmq.Consume(rabbitmq.QueueOrderItemStatus, rabbitmq.OrderItemStatusUpdated, func(msg amqp.Delivery) {
+		body := string(msg.Body)
+		log.Info().Msgf("received order item update body: %s", body)
+		err := api.HandleOrderItemUpdate(body)
+		if err != nil {
+			log.Error().Err(err).Msg("cannot handle order item update")
+		}
+		msg.Ack(false)
+	})
+	if err != nil {
+		log.Fatal().Err(err).Msg("cannot consume message")
+	}
+	select {}
 }

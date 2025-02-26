@@ -14,5 +14,6 @@ func convertProductModelToProto(product db.Product) *gen.Product {
 		Price:       float32(product.Price.InexactFloat64()),
 		ItemType:    product.ItemType,
 		IsAvailable: product.IsAvailable,
+		EstimatedPreparationTime: product.EstPreparationTime,
 	}
 }

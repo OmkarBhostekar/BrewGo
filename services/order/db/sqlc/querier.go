@@ -14,7 +14,7 @@ type Querier interface {
 	CreateOrderItem(ctx context.Context, arg CreateOrderItemParams) (CounterOrderItem, error)
 	DeleteOrder(ctx context.Context, id int32) error
 	DeleteOrderItem(ctx context.Context, id int32) error
-	GetOrderById(ctx context.Context, id int32) ([]GetOrderByIdRow, error)
+	GetOrderDetailById(ctx context.Context, id int32) ([]GetOrderDetailByIdRow, error)
 	GetOrderItemsByOrderId(ctx context.Context, counterOrderID int32) ([]GetOrderItemsByOrderIdRow, error)
 	GetOrdersByUserId(ctx context.Context, userID int32) ([]CounterOrder, error)
 	GetTotalAmountByOrderId(ctx context.Context, counterOrderID int32) (int64, error)

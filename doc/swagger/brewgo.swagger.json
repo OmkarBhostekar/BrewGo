@@ -278,7 +278,8 @@
             "name": "productId",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -656,6 +657,10 @@
         },
         "itemType": {
           "type": "string"
+        },
+        "estimatedPreparationTime": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

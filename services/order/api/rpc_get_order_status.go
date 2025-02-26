@@ -9,7 +9,8 @@ import (
 )
 
 func (server *CounterServer) GetOrderStatus(ctx context.Context,req *gen.GetOrderStatusRequest) (*gen.OrderResponse, error) {
-	rows, err := server.store.GetOrderById(ctx, req.OrderId)
+	
+	rows, err := server.store.GetOrderDetailById(ctx, req.OrderId)
 	if err != nil {
 		return nil, err
 	}

@@ -120,7 +120,7 @@ func (q *Queries) DeleteOrderItem(ctx context.Context, id int32) error {
 	return err
 }
 
-const getOrderById = `-- name: GetOrderById :many
+const getOrderDetailById = `-- name: GetOrderDetailById :many
 SELECT 
     o.id AS order_id,
     o.user_id,
@@ -146,7 +146,7 @@ LEFT JOIN products p ON oi.product_id = p.id
 WHERE o.id = $1
 `
 
-type GetOrderByIdRow struct {
+type GetOrderDetailByIdRow struct {
 	OrderID        int32           `json:"order_id"`
 	UserID         int32           `json:"user_id"`
 	OrderDate      time.Time       `json:"order_date"`
@@ -167,15 +167,15 @@ type GetOrderByIdRow struct {
 	ProductPrice   decimal.Decimal `json:"product_price"`
 }
 
-func (q *Queries) GetOrderById(ctx context.Context, id int32) ([]GetOrderByIdRow, error) {
-	rows, err := q.db.QueryContext(ctx, getOrderById, id)
+func (q *Queries) GetOrderDetailById(ctx context.Context, id int32) ([]GetOrderDetailByIdRow, error) {
+	rows, err := q.db.QueryContext(ctx, getOrderDetailById, id)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetOrderByIdRow{}
+	items := []GetOrderDetailByIdRow{}
 	for rows.Next() {
-		var i GetOrderByIdRow
+		var i GetOrderDetailByIdRow
 		if err := rows.Scan(
 			&i.OrderID,
 			&i.UserID,
